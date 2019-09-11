@@ -1,3 +1,7 @@
+/**
+boilerplate - https://github.com/oguzhanoya/express-mvc-boilerplate
+*/
+
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -15,14 +19,31 @@ const config = require('./config/config');
 const db = require('./config/db');
 
 // view engine setup
+// app.set('views', path.join(__dirname, 'app/views'));
+// app.set('view engine', 'pug');
+
+// app.use(express.static(__dirname, 'public'));
+// app.use(bodyParser.urlencoded({extend:true}));
+// app.engine('html', require('ejs').renderFile);
+// app.set('view engine', 'ejs');
+// app.set('views', path.join(__dirname, 'app/views'));
+
+// Require static assets from public folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Set 'views' directory for any views 
+// being rendered res.render()
 app.set('views', path.join(__dirname, 'app/views'));
-app.set('view engine', 'pug');
+
+// Set view engine as EJS
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
 
 app.use(logger(config.isProd ? 'combined' : 'dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(favicon(path.join(__dirname, 'public', 'favicon/favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon/favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // bootstrap routes

@@ -1,0 +1,123 @@
+.comparison {
+  margin:0 auto;
+  font:13px/1.4 "Helvetica Neue",Helvetica,Arial,sans-serif;
+  text-align:center;
+  padding:10px;
+  padding-left: 0;
+  margin-top: 20px;
+}
+
+.comparison table {
+  width:100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  border-bottom:1px solid #CCC;
+}
+
+.comparison td, .comparison th {
+  border-right:1px solid #CCC;
+  empty-cells: show;
+  padding:10px;
+}
+
+.compare-heading {
+  font-size:14pt;
+  font-weight:bold !important;
+  border-bottom:0 !important;
+  padding-top:10px !important;
+}
+
+.comparison tbody tr:nth-child(odd) {
+  display:none;
+}
+
+.comparison .compare-row {
+  background:#F5F5F5;
+}
+
+.comparison .tickblue {
+  color:#0078C1;
+}
+
+.comparison .tickgreen {
+  color:#009E2C;
+}
+
+.comparison th {
+  font-weight:normal;
+  padding:0;
+  border-bottom:1px solid #CCC;
+}
+
+.comparison tr td:first-child {
+  text-align:left;
+}
+  
+.comparison .qbse, .comparison .qbo, .comparison .tl {
+  color:#FFF;
+  padding:10px;
+  font-size:12pt;
+  border-right:1px solid #CCC;
+  border-bottom:0;
+}
+
+.comparison .tl2 {
+  border-right:0;
+}
+
+.comparison .qbse {
+  background:#0078C1;
+  border-top-left-radius: 3px;
+  border-left:0px;
+}
+
+.comparison .qbo {
+  background:#009E2C;
+  border-top-right-radius: 3px;
+  border-right:0px;
+}
+
+@media (max-width: 767px) {
+  .comparison td:first-child, .comparison th:first-child {
+    display: none;
+  }
+  .comparison tbody tr:nth-child(odd) {
+    display:table-row;
+    background:#F7F7F7;
+  }
+  .comparison .row {
+    background:#FFF;
+  }
+  .comparison td, .comparison th {
+    border:1px solid #CCC;
+  }
+  .price-info {
+  border-top:0 !important;
+  
+}
+  
+}
+
+@media (max-width: 639px) {
+  .comparison .price-buy {
+    padding:5px 10px;
+  }
+  .comparison td, .comparison th {
+    padding:10px 5px;
+  }
+  .comparison .hide-mobile {
+    display:none;
+  }
+
+  .comparison .qbse, .comparison .qbo {
+    font-size:12pt;
+    padding:10px 5px;
+  }
+  .comparison .price-buy {
+    margin-top:10px;
+  }
+  .compare-heading {
+  font-size:13pt;
+}
+}
