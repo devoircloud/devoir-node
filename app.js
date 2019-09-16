@@ -8,6 +8,10 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const flash = require('connect-flash');
+const session = require('express-session');
+const passport = require('passport');
 
 const app = express();
 const debug = require('debug')('myapp:app');
@@ -15,8 +19,22 @@ const debug = require('debug')('myapp:app');
 // config
 const config = require('./config/config');
 
+// passport config
+require('./config/passport')(passport);
+
 // database config
-const db = require('./config/db');
+const db = require('./config/db').MongoURI;
+
+// connect to database
+mongoose.connect(db, { useNewUrlParser: true,  useUnifiedTopology: true })
+  .then(() => { 
+    console.log('MongoDB Connected...')
+    app.listen(config.server.port, config.server.hostname, () => {
+      debug(`App listening on ${config.server.hostname} port: ${config.server.port}`);
+      app.emit('appStarted');
+    });
+  })
+  .catch(err => console.error(err));
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'app/views'));
@@ -46,6 +64,28 @@ app.use(cookieParser());
 // app.use(favicon(path.join(__dirname, 'public', 'favicon/favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// session
+app.use(session({
+  secret: 'awesome devoir',
+  resave: true,
+  saveUnitialized: true
+}));
+
+// passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// connect flash
+app.use(flash());
+
+// global vars
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
+});
+
 // bootstrap routes
 require('./app/routes')(app);
 
@@ -64,13 +104,7 @@ app.use((err, req, res, next) => {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
-
-db.on('connected', () => {
-  app.listen(config.server.port, config.server.hostname, () => {
-    debug(`App listening on ${config.server.hostname} port: ${config.server.port}`);
-    app.emit('appStarted');
-  });
+  console.log(err);
 });
 
 module.exports = app;

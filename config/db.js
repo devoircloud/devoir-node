@@ -1,27 +1,3 @@
-const Mongoose = require('mongoose');
-const debug = require('debug')('myapp:db');
-const config = require('./config');
-
-// Use native ES6 promises
-Mongoose.Promise = global.Promise;
-Mongoose.connect(config.database.url, { useMongoClient: true });
-
-const db = Mongoose.connection;
-
-db.on('error', () => {
-  debug(`MongoDB connection error ${config.database.url} \nPlease make sure MongoDB is running.`);
-  process.exit();
-});
-
-db.once('open', () => {
-  debug('MongoDB connection with database succeeded.');
-});
-
-process.on('SIGINT', () => {
-  db.close(() => {
-    debug('MongoDB connection disconnected through app termination.');
-    process.exit();
-  });
-});
-
-module.exports = db;
+module.exports = {
+	MongoURI: 'mongodb://ahmetson:ashgabat1Tm@cluster0-shard-00-00-nbyok.mongodb.net:27017,cluster0-shard-00-01-nbyok.mongodb.net:27017,cluster0-shard-00-02-nbyok.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority'
+}

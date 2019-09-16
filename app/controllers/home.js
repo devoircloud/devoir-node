@@ -1,9 +1,14 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 const router = express.Router();
 
 const Todo = require('../models/todo');
+const User = require('../models/user');
 const Utils = require('../helpers/utils');
+
+const { ensureAuthenticated } = require('../../config/auth');
 
 // get home page
 router.get('/', (req, res, next) => {
@@ -38,6 +43,63 @@ router.get('/register', (req, res, next) => {
   res.render('register', { title: 'Express' });
 });
 
+// register handle
+router.post('/register', (req, res) => {
+  const { name, email, password } = req.body;
+  let errors = [];
+
+  if (!name || !email || !password) {
+    errors.push({msg: 'Please fill in all fields'});
+  }
+
+  if (password.length < 6) {
+    errors.push({msg: 'Password length must be greater than 6'});
+  }
+  
+  if (errors.length) {
+    res.render('register', { errors: errors, name: name, email: email });
+  }
+  else {
+    // Validation passed
+    // console.log(User);
+    User.findOne({ email: email })
+      .then(user => {
+        if (user) {
+          errors.push({msg: 'Email already registered'});
+          res.render('register', { errors: errors, name: name, email: email });
+        }
+        else {
+          const newUser = new User({
+            name,
+            email,
+            password
+          });
+
+          // hash password
+          bcrypt.genSalt(10, (err, salt) => bcrypt.hash(
+            newUser.password, salt, (err, hash) => {
+              if (err) throw err;
+
+              // update password
+              newUser.password = hash;
+
+              console.log(newUser);
+
+              // save user
+              newUser.save()
+                .then(user => {
+                  req.flash('success_msg', 'You are now registered and can log in');
+                  res.redirect('/login');
+                })
+                .catch(err => console.error(err));
+            }
+          ));
+        }
+      })
+      .catch(err => console.err(err));
+  }
+});
+
 // get login page
 router.get('/login', (req, res, next) => {
   // generate a new name
@@ -50,7 +112,22 @@ router.get('/login', (req, res, next) => {
     .then((todo) => { console.log(`Success! ${todo.name} saved! \n${todo}`); })
     .catch((err) => { console.log(err); });
 
-  res.render('register', { title: 'Express' });
+  res.render('login', { title: 'Login' });
+});
+
+// login handle
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/content-manager', 
+    failureRedirect: '/login',
+    failureFlash: true
+  })(req, res, next);
+});
+
+router.get('/logout', (req, res, next) => {
+  req.logout();
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/login');
 });
 
 // get plan selection page
@@ -131,18 +208,9 @@ router.get('/5-after-payment', (req, res, next) => {
 
 
 // get content manager page
-router.get('/content-manager', (req, res, next) => {
-  // generate a new name
-  const name = Utils.randomString(5);
-
-  // new todo model
-  const newTodo = new Todo({ name, done: false });
-
-  newTodo.save()
-    .then((todo) => { console.log(`Success! ${todo.name} saved! \n${todo}`); })
-    .catch((err) => { console.log(err); });
-
-  res.render('manager_content', { title: 'Content Manager' });
+router.get('/content-manager', ensureAuthenticated, (req, res) => {
+  res.render('manager_content', { title: 'Content Manager',
+  user: req.user });
 });
 
 // get server manager page

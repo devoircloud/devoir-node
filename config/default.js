@@ -1,0 +1,3 @@
+{
+  "myprivatekey": "asd12345"
+}
