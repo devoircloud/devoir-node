@@ -2,5 +2,5 @@
 
 module.exports = function (app) {
   // home
-  app.use('/', require('./controllers/home'));
+  app.use('/', require('./controllers/node'));
 };

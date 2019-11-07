@@ -1,3 +1,3 @@
-{
-  "myprivatekey": "asd12345"
-}
+module.exports = {
+  uploadType: "application/zip"
+};
